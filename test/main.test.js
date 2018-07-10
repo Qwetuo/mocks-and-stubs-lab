@@ -1,3 +1,7 @@
+// mock will hoist the function to the top of the file to be run first
+// so it doesn't work if you want to require your main.js after mocking
+// so use domock instead.
+
 let mockMakePayment = jest.fn();
 let mockRefundPayment = jest.fn();
 let mockGenerateQueue = jest.fn();
@@ -16,13 +20,14 @@ jest.doMock("../src/queueService.js", () => {
 const processPayments = require("../src/main");
 
 beforeEach(() => {
-  mockMakePayment.mockReset();
-  mockRefundPayment.mockReset();
-  mockGenerateQueue.mockReset();
+  jest.clearAllMocks()
+  // mockMakePayment.mockReset();
+  // mockRefundPayment.mockReset();
+  // mockGenerateQueue.mockReset();
 })
 
   test("does not call makePayment or refundPayment when paymentQueue is empty", () => {
-    mockGenerateQueue.mockImplementationOnce(() => []);
+    mockGenerateQueue.mockReturnValue([]);
 
     processPayments();
 
@@ -49,7 +54,7 @@ beforeEach(() => {
   });
 
   test("should be able to accurately call either make or refund function", () => {
-    mockGenerateQueue.mockImplementationOnce(() => [29, 31, 9, 0, -16]);
+    mockGenerateQueue.mockReturnValue([29, 31, 9, 0, -16]);
 
     processPayments();
 
